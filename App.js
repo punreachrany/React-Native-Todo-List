@@ -1,8 +1,17 @@
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 
 import AddTodo from "./components/addTodo";
 import Header from "./components/header";
+import Sandbox from "./components/sandbox";
 import TodoItem from "./components/todoItem";
 
 export default function App() {
@@ -19,28 +28,48 @@ export default function App() {
   };
 
   const submitHandler = (text) => {
-    setTodos((prevTodos) => {
-      return [{ text: text, key: (todos.length + 1).toString() }, ...prevTodos];
-    });
+    if (text.length > 3) {
+      setTodos((prevTodos) => {
+        return [
+          { text: text, key: (todos.length + 1).toString() },
+          ...prevTodos,
+        ];
+      });
+    } else {
+      Alert.alert("OPPS!", "Todos must be over 3 chars long", [
+        {
+          text: "Understood",
+          onPress: () => console.log("Alert Close"),
+        },
+      ]);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      {/* header */}
-      <Header />
-      <View style={styles.content}>
-        {/* Todo form */}
-        <AddTodo submitHandler={submitHandler} />
-        <View style={styles.list}>
-          <FlatList
-            data={todos}
-            renderItem={({ item }) => (
-              <TodoItem item={item} pressHandler={pressHandler} />
-            )}
-          />
+    // <Sandbox />
+    <TouchableWithoutFeedback
+      onPress={() => {
+        Keyboard.dismiss();
+        console.log("Dismiss Keyboard");
+      }}
+    >
+      <View style={styles.container}>
+        {/* header */}
+        <Header />
+        <View style={styles.content}>
+          {/* Todo form */}
+          <AddTodo submitHandler={submitHandler} />
+          <View style={styles.list}>
+            <FlatList
+              data={todos}
+              renderItem={({ item }) => (
+                <TodoItem item={item} pressHandler={pressHandler} />
+              )}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -51,8 +80,12 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 40,
+    // backgroundColor: "pink",
+    flex: 1,
   },
   list: {
+    flex: 1,
     marginTop: 20,
+    // backgroundColor: "yellow",
   },
 });
